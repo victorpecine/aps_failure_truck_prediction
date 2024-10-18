@@ -1,6 +1,4 @@
 import  argparse
-import  pandas as pd
-from    load_params import load_json
 
 
 def get_arg_parser():
@@ -14,10 +12,10 @@ def get_arg_parser():
     return args
 
 
-# def main():
-#     args = get_arg_parser()
-#     return args
+def main():
+    args = get_arg_parser()
+    return args
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()

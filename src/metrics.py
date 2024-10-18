@@ -14,14 +14,13 @@ from    load_params import load_json
 from    parser import get_arg_parser
 
 
-def calculate_metrics(dataframe_train, dataframe_test, params):
+def calculate_metrics(dataframe_predict):
     print('#' * 80)
     print('METRICS STARTED')
     print('#' * 80)
 
-    df_y_pred = predict(dataframe_train, dataframe_test, params)
-    y_test = df_y_pred['y_test']
-    y_predict = df_y_pred['y_predict']
+    y_test    = dataframe_predict['y_test']
+    y_predict = dataframe_predict['y_predict']
 
     # Calculate metrics
     accuracy       = accuracy_score(y_test, y_predict)
@@ -56,24 +55,29 @@ def calculate_metrics(dataframe_train, dataframe_test, params):
     mlflow.log_metric('specificity',    specificity)
     mlflow.log_metric('auc',            auc_value)
 
+    print(f'Accuracy:    {accuracy:.2f}')
+    print(f'Precision:   {precision:.2f}')
+    print(f'Recall:      {recall:.2f}')
+    print(f'F1-score:    {f1score:.2f}')
+    print(f'Specificity: {specificity:.2f}')
+    print(f'AUC:         {auc_value:.2f}')
+    print(f'TN:          {tn:.2f}')
+    print(f'TP:          {tp:.2f}')
+    print(f'FN:          {fn:.2f}')
+    print(f'FP:          {fp:.2f}')
+
     print('#' * 80)
     print('METRICS COMPLETED')
     print('#' * 80)
 
-
-def main():
-    args = get_arg_parser()
-
-    # Load dataframes
-    df_train = pd.read_csv(args.path_dataframe_train, encoding='utf-8', sep=',')
-    df_test  = pd.read_csv(args.path_dataframe_test, encoding='utf-8', sep=',')
-
-    # Load params
-    params = load_json(args.path_config_json)
-
-    # Metrics from model
-    calculate_metrics(df_train, df_test, params)
+    return None
 
 
-if __name__ == '__main__':
-    main()
+# def main():
+#     args = get_arg_parser()
+#     # Metrics from model
+#     calculate_metrics(df_train, df_test, params)
+
+
+# if __name__ == '__main__':
+#     main()
