@@ -1,0 +1,13 @@
+{
+    "model_parameters": {
+        "n_estimators": 100,
+        "criterion": "gini",
+        "max_depth": 6,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "random_state": 0,
+        "verbose": 0
+    },
+    "target": "class",
+    "train_size": 0.8
+}

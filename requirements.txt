@@ -1,0 +1,12 @@
+pandas
+numpy
+matplotlib
+plotly
+scikit-learn
+scipy
+statsmodels
+xgboost
+imbalanced-learn
+ipykernel
+nbformat
+mlflow
