@@ -2,15 +2,26 @@ import  pandas as pd
 import  mlflow
 from    load_params import load_json
 from    parser import get_arg_parser
+from    mlflow.tracking import MlflowClient
+
+
+client        = MlflowClient()
+model_name    = 'rand_forest'
+# Get the latest version of stage
+stage         = 'None'
+versions      = client.search_model_versions(f"name='{model_name}'")
+none_versions = [v for v in versions if v.current_stage == stage]
+last_version  = none_versions[0]
+print(f'>>>>>>>>> Using version {last_version.version} from stage {last_version.current_stage}')
 
 
 def predict(dataframe_test, params):
     print('#' * 80)
-    print('PREDICT STARTED')
-    print('#' * 80)
+    print('PREDICT STARTED\n')
 
     # Load model
-    model    = mlflow.sklearn.load_model('models:/rand_forest/staging')
+    last_version_model_path = '/'.join(['models:', model_name, str(last_version.version)])
+    model    = mlflow.sklearn.load_model(last_version_model_path)
 
     target   = params['target']
     features = dataframe_test.drop(columns=target).columns
@@ -24,8 +35,19 @@ def predict(dataframe_test, params):
     df_predict = df_predict.join(y_test)
     df_predict.rename(columns={'class': 'y_test'}, inplace=True)
 
-    print('#' * 80)
-    print('PREDICT COMPLETED')
+    df_test_predict = dataframe_test.join(df_predict['y_predict'])
+
+    # Log dataframe metadata
+    df_test_predict[target]       = df_test_predict[target].astype(float)
+    df_test_predict['y_predict']  = df_test_predict['y_predict'].astype(float)
+    metadata_df_test_predict      = mlflow.data.from_pandas(df=df_test_predict,
+                                                            targets=target,
+                                                            name='Train',
+                                                            predictions='y_predict'
+                                                            )
+    mlflow.log_input(metadata_df_test_predict, context='Train')
+
+    print('\nPREDICT COMPLETED')
     print('#' * 80)
 
     return df_predict

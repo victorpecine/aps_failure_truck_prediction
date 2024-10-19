@@ -1,3 +1,4 @@
+import  os
 import  pandas as pd
 import  numpy as np
 from    parser import get_arg_parser
@@ -69,6 +70,18 @@ def wrangling_data_columns(dataframe_train, dataframe_test, parameters):
 
     df_test_scaled = pd.DataFrame(X_test_scaled, columns=features_zero_std, index=dataframe_test_zero_std.index)
     df_test_scaled = dataframe_test_zero_std[[target]].join(df_test_scaled)
+
+    # Check folder or create one
+    processed_data_path = os.path.join('data', 'processed_data')
+    is_exist = os.path.exists(processed_data_path)
+    if not is_exist:
+        os.makedirs(processed_data_path)
+        print(f'Folder {processed_data_path} created successfully!')
+    else:
+        print(f'Folder {processed_data_path} already exists.')
+
+    df_train_scaled.to_pickle(os.path.join(processed_data_path, 'df_train.pkl'))
+    df_test_scaled.to_pickle(os.path.join(processed_data_path, 'df_test.pkl'))
 
     return df_train_scaled, df_test_scaled
 

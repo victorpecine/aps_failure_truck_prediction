@@ -16,8 +16,7 @@ from    parser import get_arg_parser
 
 def calculate_metrics(dataframe_predict):
     print('#' * 80)
-    print('METRICS STARTED')
-    print('#' * 80)
+    print('METRICS STARTED\n')
 
     y_test    = dataframe_predict['y_test']
     y_predict = dataframe_predict['y_predict']
@@ -66,8 +65,7 @@ def calculate_metrics(dataframe_predict):
     print(f'FN:          {fn:.2f}')
     print(f'FP:          {fp:.2f}')
 
-    print('#' * 80)
-    print('METRICS COMPLETED')
+    print('\nMETRICS COMPLETED')
     print('#' * 80)
 
     return None

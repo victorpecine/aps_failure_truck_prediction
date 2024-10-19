@@ -11,7 +11,7 @@ from    metrics import calculate_metrics
 
 
 mlflow.set_tracking_uri('http://localhost:5000')
-mlflow.set_experiment(experiment_name='Random forest - aps_truck_failure_prediction')
+mlflow.set_experiment(experiment_name='aps_truck_failure_prediction')
 
 args = get_arg_parser()
 
@@ -24,7 +24,8 @@ params = load_json(args.path_config_json)
 df_train_scaled, df_test_scaled = wrangling_data_columns(df_train, df_test, params)
 
 timestamp_id = datetime.now().strftime("%Y%m%d%H%M%S%f")
-with mlflow.start_run(run_name=timestamp_id):
+run_name = 'validation_'  + timestamp_id
+with mlflow.start_run(run_name=run_name):
     train(df_train_scaled, params)
     df_predict = predict(df_test_scaled, params)
     calculate_metrics(df_predict)

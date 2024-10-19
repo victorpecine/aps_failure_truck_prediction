@@ -7,8 +7,7 @@ from    load_params import load_json
 
 def train(dataframe_train, parameters):
     print('#' * 80)
-    print('TRAIN STARTED')
-    print('#' * 80)
+    print('TRAIN STARTED\n')
 
     # Split X and y train
     target   = parameters['target']
@@ -31,21 +30,12 @@ def train(dataframe_train, parameters):
     signature = mlflow.models.infer_signature(dataframe_train[features])
     model_name = 'rand_forest'
     mlflow.sklearn.log_model(sk_model=model,
-                                artifact_path=model_name,
-                                signature=signature,
-                                registered_model_name=model_name
-                                )
+                             artifact_path=model_name,
+                             signature=signature,
+                             registered_model_name=model_name
+                             )
 
-    # Log dataframe metadata
-    dataframe_train[target] = dataframe_train[target].astype(float)
-    metadata_dataframe_train = mlflow.data.from_pandas(df=dataframe_train,
-                                                       targets=target,
-                                                       name='Train'
-                                                       )
-    mlflow.log_input(metadata_dataframe_train, context='Train')
-
-    print('#' * 80)
-    print('TRAIN COMPLETED')
+    print('\nTRAIN COMPLETED')
     print('#' * 80)
 
     return None
