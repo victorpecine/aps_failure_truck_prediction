@@ -10,6 +10,7 @@ from    sklearn.preprocessing import StandardScaler
 
 RANDOM_SEED = 0
 
+
 def wrangling_data_columns(dataframe_train, dataframe_test, parameters):
     target   = parameters['target']
     features = dataframe_train.drop(columns=target).columns
@@ -65,23 +66,27 @@ def wrangling_data_columns(dataframe_train, dataframe_test, parameters):
     X_train_scaled = scaler.transform(dataframe_train_zero_std[features_zero_std])
     X_test_scaled  = scaler.transform(dataframe_test_zero_std[features_zero_std])
 
-    df_train_scaled = pd.DataFrame(X_train_scaled, columns=features_zero_std, index=dataframe_train_zero_std.index)
+    df_train_scaled = pd.DataFrame(X_train_scaled,
+                                   columns=features_zero_std,
+                                   index=dataframe_train_zero_std.index)
     df_train_scaled = dataframe_train_zero_std[[target]].join(df_train_scaled)
 
-    df_test_scaled = pd.DataFrame(X_test_scaled, columns=features_zero_std, index=dataframe_test_zero_std.index)
-    df_test_scaled = dataframe_test_zero_std[[target]].join(df_test_scaled)
+    df_test_scaled  = pd.DataFrame(X_test_scaled,
+                                  columns=features_zero_std,
+                                  index=dataframe_test_zero_std.index)
+    df_test_scaled  = dataframe_test_zero_std[[target]].join(df_test_scaled)
 
     # Check folder or create one
     processed_data_path = os.path.join('data', 'processed_data')
     is_exist = os.path.exists(processed_data_path)
     if not is_exist:
         os.makedirs(processed_data_path)
-        print(f'Folder {processed_data_path} created successfully!')
+        print(f'>>>>>>>>> Folder {processed_data_path} created successfully!')
     else:
-        print(f'Folder {processed_data_path} already exists.')
+        print(f'>>>>>>>>> Folder {processed_data_path} already exists.')
 
     df_train_scaled.to_pickle(os.path.join(processed_data_path, 'df_train.pkl'))
-    df_test_scaled.to_pickle(os.path.join(processed_data_path, 'df_test.pkl'))
+    df_test_scaled.to_pickle(os.path.join(processed_data_path,  'df_test.pkl'))
 
     return df_train_scaled, df_test_scaled
 

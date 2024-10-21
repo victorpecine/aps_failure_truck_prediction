@@ -1,4 +1,5 @@
 import  pandas as pd
+import  numpy as np
 import  mlflow
 import  matplotlib.pyplot as plt
 from    predict import predict
@@ -14,10 +15,12 @@ from    load_params import load_json
 from    parser import get_arg_parser
 
 
-def calculate_metrics(dataframe_predict):
+def calculate_metrics(dataframe_predict, cutoff=0.5):
     print('#' * 80)
     print('METRICS STARTED\n')
 
+    # Define as an event the probabilities >= cutoff
+    dataframe_predict['y_predict'] = np.where(dataframe_predict['y_prob_predict'] >= cutoff, 1, 0)
     y_test    = dataframe_predict['y_test']
     y_predict = dataframe_predict['y_predict']
 
@@ -30,6 +33,7 @@ def calculate_metrics(dataframe_predict):
     tn, fp, fn, tp = confusion_matrix(y_test, y_predict).ravel()
     specificity    = tn / (tn + fp)
 
+    # Plot curves
     plot_roc_curve = RocCurveDisplay.from_predictions(y_test, y_predict).plot()
     roc_fig, roc_ax = plt.subplots()
     plot_roc_curve.plot(ax=roc_ax)
@@ -38,11 +42,16 @@ def calculate_metrics(dataframe_predict):
     cm_fig, cm_ax = plt.subplots()
     plot_confusion_matrix.plot(ax=cm_ax)
 
-    # Save plots
+    # Log cutoff
+    mlflow.log_metric('cutoff',  cutoff)
+
+    # Log plots
     mlflow.log_figure(roc_fig, 'roc_curve.png')
     mlflow.log_figure(cm_fig,  'confusion_matrix.png')
+    # Clear the current figure
+    plt.clf()
 
-    # Save metrics
+    # Log metrics
     mlflow.log_metric('true_negative',  tn)
     mlflow.log_metric('true_positive',  tp)
     mlflow.log_metric('false_negative', fn)
@@ -68,7 +77,36 @@ def calculate_metrics(dataframe_predict):
     print('\nMETRICS COMPLETED')
     print('#' * 80)
 
+    return tn, fp, fn, tp
+
+
+def estimate_maintenance_costs(true_positive: int, false_negative: int, false_positive: int):
+    no_defect_cost = 10
+    preventive_cost = 25
+    corrective_cost = 500
+
+    no_defect_maintenance_cost  = false_positive * no_defect_cost
+    preventive_maintenance_cost = true_positive * preventive_cost
+    corrective_maintenance_cost = false_negative * corrective_cost
+
+    total_maintenance_cost = no_defect_maintenance_cost \
+                                + preventive_maintenance_cost \
+                                    + corrective_maintenance_cost
+
+    print(f'\nCost of no defect:            {no_defect_maintenance_cost:.2f}')
+    print(f'Cost of preventive maintenance: {preventive_maintenance_cost:.2f}')
+    print(f'Cost of corrective maintenance: {corrective_maintenance_cost:.2f}')
+    print(f'Total maintenance cost:         {total_maintenance_cost:.2f}\n')
+    print('#' * 80)
+
+    # Log costs
+    mlflow.log_metric('no_defect_maintenance_cost',  no_defect_maintenance_cost)
+    mlflow.log_metric('preventive_maintenance_cost', preventive_maintenance_cost)
+    mlflow.log_metric('corrective_maintenance_cost', corrective_maintenance_cost)
+    mlflow.log_metric('total_maintenance_cost',      total_maintenance_cost)
+
     return None
+
 
 
 # def main():
