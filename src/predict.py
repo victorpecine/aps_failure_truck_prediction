@@ -5,23 +5,36 @@ from    parser import get_arg_parser
 from    mlflow.tracking import MlflowClient
 
 
-client     = MlflowClient()
-model_name = 'rand_forest'
-# Get the model latest version of stage
-stage          = 'None'
-versions       = client.search_model_versions(f"name='{model_name}'")
-stage_versions = [v for v in versions if v.current_stage == stage]
-last_version   = stage_versions[0]
-print(f'>>>>>>>>> Using version {last_version.version} from stage {last_version.current_stage}')
+
+# client     = MlflowClient()
+# model_name = 'rand_forest'
+# # Get the model latest version of stage
+# stage          = 'None'
+# versions       = client.search_model_versions(f"name='{model_name}'")
+# stage_versions = [v for v in versions if v.current_stage == stage]
+# last_version   = stage_versions[0]
+# print(f'>>>>>>>>> Using version {last_version.version} from stage {last_version.current_stage}')
 
 
 def predict(dataframe_test, params):
     print('#' * 80)
     print('PREDICT STARTED\n')
+    try:
+        # Load model from MLFlow
+        client     = MlflowClient()
+        model_name = 'rand_forest'
+        # Get the model latest version of stage
+        stage          = 'None'
+        versions       = client.search_model_versions(f"name='{model_name}'")
+        stage_versions = [v for v in versions if v.current_stage == stage]
+        last_version   = stage_versions[0]
+        print(f'>>>>>>>>> Using version {last_version.version} from stage {last_version.current_stage}')
 
-    # Load model from MLFlow
-    last_version_model_path = '/'.join(['models:', model_name, str(last_version.version)])
-    model = mlflow.sklearn.load_model(last_version_model_path)
+        last_version_model_path = '/'.join(['models:', model_name, str(last_version.version)])
+        model = mlflow.sklearn.load_model(last_version_model_path)
+    except IndexError:
+        # Create a version 1 model
+        model = mlflow.sklearn.load_model('/'.join(['models:', model_name, stage]) )
 
     target   = params['target']
     features = dataframe_test.drop(columns=target).columns

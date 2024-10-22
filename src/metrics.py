@@ -100,10 +100,10 @@ def estimate_maintenance_costs(true_positive: int, false_negative: int, false_po
     print('#' * 80)
 
     # Log costs
-    mlflow.log_metric('no_defect_maintenance_cost',  no_defect_maintenance_cost)
-    mlflow.log_metric('preventive_maintenance_cost', preventive_maintenance_cost)
-    mlflow.log_metric('corrective_maintenance_cost', corrective_maintenance_cost)
-    mlflow.log_metric('total_maintenance_cost',      total_maintenance_cost)
+    mlflow.log_metric('cost_no_defect_maintenance',  no_defect_maintenance_cost)
+    mlflow.log_metric('cost_preventive_maintenance', preventive_maintenance_cost)
+    mlflow.log_metric('cost_corrective_maintenance', corrective_maintenance_cost)
+    mlflow.log_metric('cost_total_maintenance',      total_maintenance_cost)
 
     return None
 
