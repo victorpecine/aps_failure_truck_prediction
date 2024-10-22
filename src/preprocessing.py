@@ -12,6 +12,11 @@ RANDOM_SEED = 0
 
 
 def wrangling_data_columns(dataframe_train, dataframe_test, parameters):
+    # Change strings for NaN
+    dataframe_train.replace({'na': np.nan}, inplace=True)
+    dataframe_test.replace({'na': np.nan}, inplace=True)
+
+    # Define target and features
     target   = parameters['target']
     features = dataframe_train.drop(columns=target).columns
 

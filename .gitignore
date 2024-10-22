@@ -164,8 +164,7 @@ cython_debug/
 # Mlflow stuffs
 mlruns/
 mlartifacts/
-data/original_data/df_test.csv
-data/original_data/df_train.csv
-data/original_data/df_validation.csv
-data/processed_data/df_test.pkl
-data/processed_data/df_train.pkl
+
+# Data wrangling
+*/data_split
+*/processed_data

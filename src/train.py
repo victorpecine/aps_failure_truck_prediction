@@ -1,4 +1,6 @@
 import  mlflow
+import  os
+import  shutil
 import  pandas as pd
 import  numpy as np
 import  matplotlib.pyplot as plt
@@ -79,8 +81,8 @@ def train(dataframe_train, parameters):
 
     # Save cross-validation scores
     for score in parameters['cross_validation']['scores']:
-        cv_train_mean = cv_results[f'train_{score}'].mean()
-        cv_test_mean  = cv_results[f'test_{score}'].mean()
+        cv_train_mean = cv_results[f'train_{score}'].mean().round(4)
+        cv_test_mean  = cv_results[f'test_{score}'].mean().round(4)
         print(f'>>>>>>>>> CV {score} train mean: {cv_train_mean}')
         print(f'>>>>>>>>> CV {score} test mean: {cv_test_mean}')
         mlflow.log_metric(f'cv_{score}_train_mean', cv_train_mean)

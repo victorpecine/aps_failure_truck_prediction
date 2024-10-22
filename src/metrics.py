@@ -2,7 +2,6 @@ import  pandas as pd
 import  numpy as np
 import  mlflow
 import  matplotlib.pyplot as plt
-from    predict import predict
 from    sklearn.metrics import accuracy_score
 from    sklearn.metrics import confusion_matrix
 from    sklearn.metrics import precision_score
