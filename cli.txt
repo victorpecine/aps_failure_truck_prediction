@@ -1,0 +1,22 @@
+APS truck failure
+#TODO
+	- Deploy with Azure
+	- Defs doc strings
+
+Change to folder and start venv
+	- cd C:\Users\victo\Downloads\00. Estudo Data Science\aps_failure_truck_prediction && .\venv\Scripts\activate && code .
+
+Run stage None
+	- python run\run_stage_none.py --path_dataframe_train=data\original_data\air_system_previous_years.csv --path_dataframe_test=data\original_data\air_system_present_year.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
+
+Run stage Staging
+	- python run\run_stage_staging.py --path_dataframe_test=data\processed_data\df_test.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
+
+Ru stage Production
+	- python run\run_stage_prod.py --path_dataframe_train=data\processed_data\df_train.csv --path_dataframe_test=data\processed_data\df_test.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
+
+Env variable to track MLflow
+	- SET MLFLOW_TRACKING_URI=http://localhost:5000
+
+To serve the API model
+	- mlflow models serve -m models:/rand_forest/production -p 5200 --no-conda

@@ -2,24 +2,25 @@ import  argparse
 
 
 def get_arg_parser():
+    """
+    _summary_
+
+    Returns:
+        _type_: _description_
+    """
     # Receive paths from command line
     parser = argparse.ArgumentParser(description='Shared argument parser')
     parser.add_argument('--path_dataframe_train',
                         type=str,
                         required=False,
-                        help='Path to the train dataframe'
-                        )
-    parser.add_argument('--path_dataframe_validation',
-                        type=str,
-                        required=False,
-                        help='Path to the validation dataframe',
-                        default=None
+                        help='Path to the train dataframe',
+                        default='data\\original_data\\air_system_previous_years.csv'
                         )
     parser.add_argument('--path_dataframe_test',
                         type=str,
                         required=False,
                         help='Path to the test dataframe',
-                        default=None
+                        default='data\\original_data\\air_system_present_year.csv'
                         )
     parser.add_argument('--path_config_json',
                         type=str,
@@ -36,12 +37,14 @@ def get_arg_parser():
     parser.add_argument('--mlflow_experiment_name',
                         type=str,
                         required=True,
-                        help='MLFlow experiment name'
+                        help='MLflow experiment name',
+                        default=None
                         )
     parser.add_argument('--mlflow_model_name',
                         type=str,
                         required=True,
-                        help='MLFlow model name'
+                        help='MLflow model name',
+                        default=None
                         )
 
     args = parser.parse_args()
@@ -49,10 +52,10 @@ def get_arg_parser():
     return args
 
 
-def main():
-    args = get_arg_parser()
-    return args
+# def main():
+#     args = get_arg_parser()
+#     return args
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
