@@ -104,6 +104,7 @@ print(f'Cost of no defect:              US$ {no_defect_maintenance_cost:.2f}')
 print(f'Cost of preventive maintenance: US$ {preventive_maintenance_cost:.2f}')
 print(f'Cost of corrective maintenance: US$ {corrective_maintenance_cost:.2f}')
 print(f'Total maintenance cost:         US$ {total_maintenance_cost:.2f}\n')
+print('#' * 80)
 
 # Path and folder to save a file with predictions
 predict_data_path = os.path.join('data', 'prediction')
