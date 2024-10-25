@@ -136,10 +136,10 @@ def estimate_maintenance_costs(true_positive: int, false_negative: int, false_po
                                     + corrective_maintenance_cost
 
     print('\n')
-    print(f'Cost of no defect:              {no_defect_maintenance_cost:.2f}')
-    print(f'Cost of preventive maintenance: {preventive_maintenance_cost:.2f}')
-    print(f'Cost of corrective maintenance: {corrective_maintenance_cost:.2f}')
-    print(f'Total maintenance cost:         {total_maintenance_cost:.2f}\n')
+    print(f'Cost of no defect:              US$ {no_defect_maintenance_cost:.2f}')
+    print(f'Cost of preventive maintenance: US$ {preventive_maintenance_cost:.2f}')
+    print(f'Cost of corrective maintenance: US$ {corrective_maintenance_cost:.2f}')
+    print(f'Total maintenance cost:         US$ {total_maintenance_cost:.2f}\n')
     print('#' * 80)
 
     # Log costs

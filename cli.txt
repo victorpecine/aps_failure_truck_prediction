@@ -13,10 +13,10 @@ Run stage Staging
 	- python run\run_stage_staging.py --path_dataframe_test=data\processed_data\df_test.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
 
 Ru stage Production
-	- python run\run_stage_prod.py --path_dataframe_train=data\processed_data\df_train.csv --path_dataframe_test=data\processed_data\df_test.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
+	- python run\run_stage_prod.py --path_dataframe_test=data\processed_data\df_test.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
 
 Env variable to track MLflow
 	- SET MLFLOW_TRACKING_URI=http://localhost:5000
 
 To serve the API model
-	- mlflow models serve -m models:/rand_forest/production -p 5200 --no-conda
+	- mlflow models serve -m models:/rand_forest/production -p 5001 --no-conda

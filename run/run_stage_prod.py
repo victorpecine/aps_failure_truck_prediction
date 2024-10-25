@@ -1,4 +1,5 @@
 import  pandas as pd
+import  numpy  as np
 import  json
 import  requests
 import  sys
@@ -45,20 +46,22 @@ y_test = df_test[target]
 # Requisition format of MLFLow served model
 X_test_json = json.dumps({'dataframe_records': X_test.to_dict(orient='records')})
 
-
 # Model requisition via MLflow API do Mlflow and gest predictions as response
-model_response = requests.post(url='http://127.0.0.1:5200/invocations',
+model_response = requests.post(url='http://127.0.0.1:5001/invocations',
                                data=X_test_json,
                                headers={'Content-Type': 'application/json'},
                                timeout=20
                                )
 
 predictions = model_response.json()
-df_predict  = pd.DataFrame(predictions['predictions'], columns=['y_predict'])
-df_predict  = df_predict.join(df_test)
-y_predict   = df_predict['y_predict']
+df_prob_predicts  = pd.DataFrame(predictions['predictions'], columns=['y_predict_non_event', 'y_predict_event'])
 
+# Create binary classification based on cutoff
 cutoff = params.get('cutoff')
+df_prob_predicts['y_predict'] = np.where(df_prob_predicts['y_predict_event'] >= cutoff, 1, 0)
+
+df_predict  = df_prob_predicts[['y_predict']].join(df_test)
+y_predict   = df_predict['y_predict']
 
 # Calculate metrics
 accuracy       = accuracy_score(y_test, y_predict)
@@ -69,6 +72,8 @@ auc_value      = roc_auc_score(y_test, y_predict)
 tn, fp, fn, tp = confusion_matrix(y_test, y_predict).ravel()
 specificity    = tn / (tn + fp)
 
+print('#' * 80)
+print(f'PREDICT RESULTS FOR CUTOFF {cutoff}\n')
 print(f'Cutoff:      {cutoff:.2f}')
 print(f'Accuracy:    {accuracy:.2f}')
 print(f'Precision:   {precision:.2f}')
@@ -95,10 +100,10 @@ total_maintenance_cost = no_defect_maintenance_cost \
                                 + corrective_maintenance_cost
 
 print('\n')
-print(f'Cost of no defect:              {no_defect_maintenance_cost:.2f}')
-print(f'Cost of preventive maintenance: {preventive_maintenance_cost:.2f}')
-print(f'Cost of corrective maintenance: {corrective_maintenance_cost:.2f}')
-print(f'Total maintenance cost:         {total_maintenance_cost:.2f}\n')
+print(f'Cost of no defect:              US$ {no_defect_maintenance_cost:.2f}')
+print(f'Cost of preventive maintenance: US$ {preventive_maintenance_cost:.2f}')
+print(f'Cost of corrective maintenance: US$ {corrective_maintenance_cost:.2f}')
+print(f'Total maintenance cost:         US$ {total_maintenance_cost:.2f}\n')
 
 # Path and folder to save a file with predictions
 predict_data_path = os.path.join('data', 'prediction')
