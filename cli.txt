@@ -12,14 +12,16 @@ Run stage None
 Run stage Staging
 	- python run\run_stage_staging.py --path_dataframe_train=data\original\air_system_previous_years.csv --path_dataframe_test=data\original\air_system_present_year.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
 
-Ru stage Production
-	- python run\run_stage_prod.py --path_dataframe_train=data\original\air_system_previous_years.csv --path_dataframe_test=data\original\air_system_present_year.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
 
 Env variable to track MLflow
 	- SET MLFLOW_TRACKING_URI=http://localhost:5000
 
 To serve the API model
 	- cd src && mlflow models serve -m models:/rand_forest/production -p 5001 --no-conda
+
+Ru stage Production
+	- python run\run_stage_prod.py --path_dataframe_test=data\original\air_system_present_year.csv --path_config_json=src\config.json --mlflow_experiment_name="aps_truck_failure_prediction" --mlflow_model_name="rand_forest"
+
 
 
 

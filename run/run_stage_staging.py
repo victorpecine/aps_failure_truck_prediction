@@ -35,7 +35,7 @@ create_experiment(tracking_uri, experiment_name)
 _, df_test = wrangling_data(path_df_train, params, path_df_test)
 
 # Execute the process for each cutoff
-for cutoff in np.arange(0.05, 1, 0.01).round(2):
+for cutoff in np.arange(0.2, 0.4, 0.01).round(2):
 # Create run name with model name, cutoff and timestamp
     timestamp_id = datetime.now().strftime("%Y%m%d%H%M%S")
     run_name = f'test_{model_name}_cutoff_{cutoff:.2f}_' + timestamp_id
@@ -45,7 +45,7 @@ for cutoff in np.arange(0.05, 1, 0.01).round(2):
         df_predict = predict_classification(df_test, params, model_name, 'Staging')
         true_negative, false_positive, \
             false_negative, true_positive = calculate_metrics(df_predict, cutoff)
-        estimate_maintenance_costs(true_positive, false_negative, false_positive)
+        estimate_maintenance_costs(true_positive, false_negative, false_positive, params)
 
 # Path and folder to save a file with predictions
 predict_data_path = os.path.join('data', 'prediction')
