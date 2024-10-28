@@ -11,29 +11,29 @@ from    sklearn.preprocessing  import StandardScaler
 RANDOM_SEED = np.random.seed(0)
 
 
-def wrangling_data_columns(dataframe_train, parameters, dataframe_test=None):
+def wrangling_data(path_dataframe_train: str, parameters_path: str, path_dataframe_test: str=None):
     """
     Change target str to int as 0 (non event) and 1 (event)
-    
     Use SimpleImputer to fill NaN values with train features medians
-    
     Use SMOTE to balance train dataframe
-    
     Drop features with zero variance from train and test
-    
     Use StandardScaler to scale train and test
     
     Args:
-        dataframe_train (pandas dataframe): Dataframe with features and target
-        parameters (json): A file containing the parameters of model,
-                            cross validation, target, train size and cutoff
-        dataframe_test (pandas dataframe, optional): Dataframe with features and target. Defaults to None.
+        path_dataframe_train:
+        parameters:
+        path_dataframe_test:
 
     Returns:
-        df_train_scaled (pandas dataframe): Train dataframe scaled
-
-        df_test_scaled (pandas dataframe): Test dataframe scaled
+        df_train_scaled (pandas dataframe): Train dataframe processed
+        df_test_scaled  (pandas dataframe): Test dataframe processed
     """
+    # Load dataframes
+    dataframe_train = pd.read_csv(path_dataframe_train, encoding='utf-8', sep=',', na_values=['na'])
+
+    # Load params
+    parameters = load_json(parameters_path)
+
     # Change strings for NaN
     dataframe_train.replace({'na': np.nan}, inplace=True)
 
@@ -86,7 +86,7 @@ def wrangling_data_columns(dataframe_train, parameters, dataframe_test=None):
     df_train_scaled = dataframe_train_zero_std[[target]].join(df_train_scaled)
 
     # Check folder or create one to save train dataframe
-    processed_data_path = os.path.join('data', 'processed_data')
+    processed_data_path = os.path.join('data', 'processed')
     is_exist = os.path.exists(processed_data_path)
     if not is_exist:
         os.makedirs(processed_data_path)
@@ -101,7 +101,11 @@ def wrangling_data_columns(dataframe_train, parameters, dataframe_test=None):
                            )
 
     # Wrangling on test dataframe if passed at args
-    if not dataframe_test.empty:
+    if path_dataframe_test:
+        dataframe_test = pd.read_csv(path_dataframe_test,
+                                     encoding='utf-8',
+                                     sep=','
+                                     )
         dataframe_test.replace({'na': np.nan}, inplace=True)
         dataframe_test[features] = dataframe_test[features].astype(float)
         dataframe_test[target]   = dataframe_test[target].map(map_class)
@@ -128,12 +132,10 @@ def wrangling_data_columns(dataframe_train, parameters, dataframe_test=None):
 
 # def main():
 #     args = get_arg_parser()
-#     # Load dataframes
-#     df_train = pd.read_csv(args.path_dataframe_train, encoding='utf-8', sep=',', na_values=['na'])
-#     df_test  = pd.read_csv(args.path_dataframe_test,  encoding='utf-8', sep=',', na_values=['na'])
-#     # Load params
-#     params = load_json(args.path_config_json)
-#     wrangling_data_columns(df_train, df_test, params)
+#     path_dataframe_train = args.path_dataframe_train
+#     path_dataframe_test  = args.path_dataframe_test
+#     path_config   = args.path_config_json
+#     wrangling_data(path_dataframe_train, path_config, path_dataframe_test)
 
 
 # if __name__ == '__main__':

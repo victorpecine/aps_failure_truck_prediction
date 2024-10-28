@@ -1,22 +1,20 @@
 import  mlflow
 import  pandas as pd
 import  numpy  as np
-import  sys
+import  plotly.express as px
+import  matplotlib.pyplot as plt
 from    sklearn.ensemble        import RandomForestClassifier
 from    sklearn.model_selection import RandomizedSearchCV
 from    sklearn.model_selection import cross_validate
-# Append path to find the modules
-sys.path.append('src\\')
-from    parser          import get_arg_parser
-from    load_params     import load_json
-from    mlflow.models   import infer_signature
-from    mlflow.pyfunc   import PythonModel
+from    parser                  import get_arg_parser
+from    load_params             import load_json
+from    mlflow.models           import infer_signature
+from    mlflow.pyfunc           import PythonModel
 
 
 RANDOM_SEED = np.random.seed(0)
 
 
-# Custom PythonModel class
 class CustomRandomForestClassifier(PythonModel):
     def __init__(self, model):
         self.model = model
@@ -34,7 +32,7 @@ class CustomRandomForestClassifier(PythonModel):
             raise ValueError(f'\n>>>>>>>>> The prediction method {predict_method} is not supported.')
 
 
-def create_parameters_range(parameters: dict):
+def create_hyper_parameters_range(parameters: dict):
     range_n_estimators = np.arange(start=round(parameters.get('model_parameters')['n_estimators'][0], 2),
                                    stop=round(parameters.get('model_parameters')['n_estimators'][-1], 2),
                                    step=1
@@ -60,13 +58,59 @@ def create_parameters_range(parameters: dict):
     return param_distributions
 
 
+def calculate_feature_importance(model, features: list):
+    # Calculate feature importance (Gini)
+    feat_importance    = model.feature_importances_
+    df_feat_importance = pd.DataFrame({'feature':    features,
+                                       'importance': feat_importance}
+                                      ).sort_values('importance', ascending=True)
+
+    plt.figure(figsize=(8, 4))
+    plt.boxplot(x=df_feat_importance['importance'], vert=False)
+    plt.xlabel('Importance')
+    plt.title('Feature importance distribution')
+    mlflow.log_figure(plt.gcf(), 'feature_importance_boxplot.png')
+
+    # Plot the 20 higher features importance
+    plt.figure(figsize=(8, 4))
+    plt.barh(df_feat_importance['feature'][-20:], df_feat_importance['importance'][-20:])
+    plt.xlabel('Importance')
+    plt.ylabel('Features')
+    plt.title('Top 20 feature importance')
+    mlflow.log_figure(plt.gcf(), 'feature_importance_bar_plot.png')
+
+
+def plot_cross_validation_score(cv_results, score):
+    # Create a line plot
+    plot_fig, plot_ax = plt.subplots(figsize=(8, 4))
+    plot_ax.plot(cv_results[f'train_{score}'],
+                 marker='o',
+                 linestyle='-',
+                 color='blue',
+                 label='Train'
+                )
+    plot_ax.plot(cv_results[f'test_{score}'],
+                 marker='o',
+                 linestyle='-',
+                 color='red',
+                 label='Validation'
+                )
+    plot_ax.set_xlabel('Iteration')
+    plot_ax.set_xticks(range(1, len(cv_results[f'train_{score}']) + 1))
+    plot_ax.set_ylabel('Score')
+    plot_ax.set_title(f'Cross-validation {score} score')
+    plot_ax.legend()
+    plot_ax.grid(True)
+    mlflow.log_figure(plot_fig, f'cv_{score}.png')
+
+
 def train(dataframe_train: pd.DataFrame, parameters: dict):
     """
     _summary_
 
     Args:
-        dataframe_train (_type_): _description_
-        parameters (_type_): _description_
+        dataframe_train (pd.DataFrame): _description_
+        parameters (dict): _description_
 
     Returns:
         _type_: _description_
@@ -76,17 +120,16 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
 
     # Split X and y train
     target   = parameters.get('target')
-    df_train = dataframe_train
     dataframe_train[target] = dataframe_train[target].astype(float)
-    features = df_train.drop(columns=target).columns
-    X_train  = df_train[features]
-    y_train  = df_train[target]
+    features = dataframe_train.drop(columns=target).columns
+    X_train  = dataframe_train[features]
+    y_train  = dataframe_train[target]
 
     # Create and fit model
     model = RandomForestClassifier(random_state=RANDOM_SEED, verbose=0)
 
     # Random search on hyper parameters
-    param_distributions = create_parameters_range(parameters)
+    param_distributions = create_hyper_parameters_range(parameters)
     print('#' * 80)
     print('RANDOM SEARCH STARTED\n')
     random_search = RandomizedSearchCV(estimator=model,
@@ -98,12 +141,15 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
                                        scoring='accuracy'
                                        )
     random_search.fit(X_train, y_train)
-    # Define best parameters and apply on a new model
+    # Define best parameters and creates on a new model
     best_params = random_search.best_params_
     print(f'\nBest parameters:\n{best_params}')
 
     model_best_params = RandomForestClassifier(**best_params, random_state=RANDOM_SEED)
     model_best_params.fit(X_train, y_train)
+
+    # Create and log feature importance plots
+    calculate_feature_importance(model_best_params, features=features)
 
     # Define model signature
     signature = infer_signature(model_input=X_train[:2], params={'predict_method': 'predict_proba'})
@@ -112,7 +158,7 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
                             signature=signature
                             )
 
-    # Log best params metadata
+    # Log best hyper parameters metadata
     for param_name, value in best_params.items():
         mlflow.log_param(param_name, value)
 
@@ -136,6 +182,7 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
     for score in parameters.get('cross_validation')['scores']:
         cv_train_mean = cv_results[f'train_{score}'].mean().round(4)
         cv_test_mean  = cv_results[f'test_{score}'].mean().round(4)
+        plot_cross_validation_score(cv_results, score)
         print(f'>>>>>>>>> CV {score} train mean: {cv_train_mean}')
         print(f'>>>>>>>>> CV {score} test mean:  {cv_test_mean}')
         # Log cross-validation scores
@@ -153,11 +200,15 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
 # def main():
 #     args = get_arg_parser()
 #     # Load dataframes
-#     df_train = pd.read_csv(args.path_dataframe_train, encoding='utf-8', sep=',', na_values=['na'])
+#     dataframe_train = pd.read_csv(args.path_dataframe_train,
+#                                   encoding='utf-8',
+#                                   sep=',',
+#                                   na_values=['na']
+#                                   )
 #     # Load params
 #     params = load_json(args.path_config_json)
 #     # Train model
-#     train(df_train, params)
+#     train(dataframe_train, params)
 
 
 # if __name__ == '__main__':

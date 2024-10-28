@@ -14,13 +14,13 @@ def get_arg_parser():
                         type=str,
                         required=False,
                         help='Path to the train dataframe',
-                        default='data\\original_data\\air_system_previous_years.csv'
+                        default='data\\original\\air_system_previous_years.csv'
                         )
     parser.add_argument('--path_dataframe_test',
                         type=str,
                         required=False,
                         help='Path to the test dataframe',
-                        default='data\\original_data\\air_system_present_year.csv'
+                        default='data\\original\\air_system_present_year.csv'
                         )
     parser.add_argument('--path_config_json',
                         type=str,

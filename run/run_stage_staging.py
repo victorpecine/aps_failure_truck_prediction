@@ -13,38 +13,36 @@ from    predict           import predict_classification
 from    metrics           import calculate_metrics
 from    metrics           import estimate_maintenance_costs
 from    create_experiment import create_experiment
+from    preprocessing     import wrangling_data
 
-
-df_used = 'test'
 
 args = get_arg_parser()
 # Arg paths
+path_df_train   = args.path_dataframe_train
 path_df_test    = args.path_dataframe_test
+path_config     = args.path_config_json
 tracking_uri    = args.mlflow_set_tracking_uri
 experiment_name = args.mlflow_experiment_name
 model_name      = args.mlflow_model_name
-stage           = 'Staging'
 
-# Load dataframes
-df_test  = pd.read_csv(args.path_dataframe_test,
-                       encoding='utf-8',
-                       sep=','
-                       )
 # Load params
-params = load_json(args.path_config_json)
+params = load_json(path_config)
 
-# Access to MLFLow
+# Access MLFLow
 create_experiment(tracking_uri, experiment_name)
 
-# cutoff = 0.5
+# Wrangling dataframe
+_, df_test = wrangling_data(path_df_train, params, path_df_test)
+
 # Execute the process for each cutoff
-for cutoff in np.arange(0.05, 1, 0.05).round(2):
+for cutoff in np.arange(0.05, 1, 0.01).round(2):
 # Create run name with model name, cutoff and timestamp
     timestamp_id = datetime.now().strftime("%Y%m%d%H%M%S")
-    run_name = f'{df_used}_{model_name}_cutoff_{cutoff:.2f}_' + timestamp_id
+    run_name = f'test_{model_name}_cutoff_{cutoff:.2f}_' + timestamp_id
+    # Predict
     with mlflow.start_run(run_name=run_name):
         print(f'\n>>>>>>>>> APPLYING WITH CUTOFF {cutoff:.2f}')
-        df_predict = predict_classification(df_test, params, model_name, stage)
+        df_predict = predict_classification(df_test, params, model_name, 'Staging')
         true_negative, false_positive, \
             false_negative, true_positive = calculate_metrics(df_predict, cutoff)
         estimate_maintenance_costs(true_positive, false_negative, false_positive)

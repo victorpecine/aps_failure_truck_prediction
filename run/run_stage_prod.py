@@ -15,26 +15,27 @@ sys.path.append('src\\')
 from    parser            import get_arg_parser
 from    load_params       import load_json
 from    create_experiment import create_experiment
+from    preprocessing     import wrangling_data
 
 
 df_used = 'test'
 args = get_arg_parser()
 # Arg paths
+path_df_train   = args.path_dataframe_train
 path_df_test    = args.path_dataframe_test
+path_config     = args.path_config_json
 tracking_uri    = args.mlflow_set_tracking_uri
 experiment_name = args.mlflow_experiment_name
 model_name      = args.mlflow_model_name
 
-# Load dataframes
-df_test  = pd.read_csv(args.path_dataframe_test,
-                       encoding='utf-8',
-                       sep=','
-                       )
 # Load params
-params = load_json(args.path_config_json)
+params = load_json(path_config)
 
-# Access to MLFLow
+# Access MLFLow
 create_experiment(tracking_uri, experiment_name)
+
+# Wrangling dataframe
+_, df_test = wrangling_data(path_df_train, params, path_df_test)
 
 # Split X and y test
 target   = params.get('target')
@@ -74,7 +75,6 @@ specificity    = tn / (tn + fp)
 
 print('#' * 80)
 print(f'PREDICT RESULTS FOR CUTOFF {cutoff}\n')
-print(f'Cutoff:      {cutoff:.2f}')
 print(f'Accuracy:    {accuracy:.2f}')
 print(f'Precision:   {precision:.2f}')
 print(f'Recall:      {recall:.2f}')

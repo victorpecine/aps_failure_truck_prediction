@@ -1,14 +1,14 @@
 {
     "model_parameters": {
-        "n_estimators": [10, 101],
-        "criterion": ["gini", "entropy" ],
+        "n_estimators": [5, 200],
+        "criterion": ["gini"],
         "max_depth": [3, 13],
         "min_samples_split": [0.2, 1],
         "min_samples_leaf": [1, 7]
     },
     "cross_validation": {
         "n_iterations": 10,
-        "folders": 5,
+        "folders": 10,
         "scores": [
             "accuracy",
             "f1_macro",
@@ -22,7 +22,6 @@
         "corrective_cost": 500
     },
     "target": "class",
-    "train_size": 0.8,
     "cutoff": 0.6,
     "model_name": "rand_forest",
     "predict_method": "predict_proba"

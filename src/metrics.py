@@ -111,7 +111,7 @@ def calculate_metrics(dataframe_predict, cutoff=0.5):
     return tn, fp, fn, tp
 
 
-def estimate_maintenance_costs(true_positive: int, false_negative: int, false_positive: int):
+def estimate_maintenance_costs(true_positive: int, false_negative: int, false_positive: int, parameters: dict):
     """
     _summary_
 
@@ -123,12 +123,12 @@ def estimate_maintenance_costs(true_positive: int, false_negative: int, false_po
     Returns:
         _type_: _description_
     """
-    no_defect_cost = 10
-    preventive_cost = 25
-    corrective_cost = 500
+    no_defect_cost = parameters.get('maintenance_cost')['no_defect_cost']
+    preventive_cost = parameters.get('maintenance_cost')['preventive_cost']
+    corrective_cost = parameters.get('maintenance_cost')['corrective_cost']
 
     no_defect_maintenance_cost  = false_positive * no_defect_cost
-    preventive_maintenance_cost = true_positive * preventive_cost
+    preventive_maintenance_cost = true_positive  * preventive_cost
     corrective_maintenance_cost = false_negative * corrective_cost
 
     total_maintenance_cost = no_defect_maintenance_cost \

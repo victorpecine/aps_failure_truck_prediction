@@ -167,6 +167,7 @@ mlartifacts/
 /train_artifacts
 
 # Data wrangling
-*/data_split
-*/processed_data
+*/split
+*/processed
 */prediction
+data/feat_importance.csv

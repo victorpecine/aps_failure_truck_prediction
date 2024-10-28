@@ -2,15 +2,14 @@ import mlflow.tracking
 import  pandas as pd
 import  mlflow
 import  os
-import  shutil
 from    load_params     import load_json
 from    parser          import get_arg_parser
 from    mlflow.tracking import MlflowClient
-from    mlflow.models   import infer_signature
 
 
 def predict_classification(dataframe_test, parameters, model_name: str, stage: str):
-    """_summary_
+    """
+    _summary_
 
     Args:
         dataframe_test (_type_): _description_
