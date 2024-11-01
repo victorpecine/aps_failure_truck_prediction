@@ -171,3 +171,4 @@ mlartifacts/
 */processed
 */prediction
 data/feat_importance.csv
+data/*.json

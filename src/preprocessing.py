@@ -106,6 +106,7 @@ def wrangling_data(path_dataframe_train: str, parameters_path: str, path_datafra
                                      encoding='utf-8',
                                      sep=','
                                      )
+        # TODO Remove class
         dataframe_test.replace({'na': np.nan}, inplace=True)
         dataframe_test[features] = dataframe_test[features].astype(float)
         dataframe_test[target]   = dataframe_test[target].map(map_class)

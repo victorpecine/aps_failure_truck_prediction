@@ -10,7 +10,7 @@
         "n_iterations": 10,
         "folders": 10,
         "scores": [
-            "accuracy",
+            "recall",
             "f1_macro",
             "roc_auc",
             "precision_macro"
