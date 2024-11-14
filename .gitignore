@@ -172,3 +172,6 @@ mlartifacts/
 */prediction
 data/feat_importance.csv
 data/*.json
+
+# Plot folder
+data/plots/
