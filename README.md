@@ -31,8 +31,10 @@ Supervised machine learning techniques were used to solve the problem and the **
 
 As test dataset were used the _air_system_present_year.csv_.
 
+The final model used to predict the classification was **Random Forest with hyper parameters.**
+
 ## **Savings**
 
-![historical_cost](https://i.ibb.co/pjB1pkP/historical-cost.png)
+![historical_cost](https://i.ibb.co/P6gHV0h/historical-cost.png)
 
-![pct_variations](https://i.ibb.co/SnPP8cZ/pct-cost-variation.png)
+![pct_variations](https://i.ibb.co/d5HXr5F/pct-cost-variation.png)
