@@ -16,8 +16,7 @@ def wrangling_train_data(path_dataframe_train: str):
     Use SimpleImputer to fill NaN values with train features medians
     Use SMOTE to balance train dataframe
     Drop features with zero variance from train and test
-    Use StandardScaler to scale train and test
-    
+
     Args:
         path_dataframe_train:
         parameters:
@@ -39,7 +38,6 @@ def wrangling_train_data(path_dataframe_train: str):
     df_isna['pct_nan'] = (df_isna['total_nan'] / df_train.shape[0] * 100).round(2)
     # Remove features with over 50% of NaN data
     features_low_nan  = df_isna[df_isna['pct_nan'] <= 50].index.to_list()
-    features_high_nan = df_isna[df_isna['pct_nan'] > 50].index.to_list()
     df_features = df_train[features_low_nan].astype(float)
 
     # Change class object to int dummies
@@ -55,11 +53,10 @@ def wrangling_train_data(path_dataframe_train: str):
     imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     imputer.fit(df_features)
 
+    # Save the imputer to a file
     train_artifacts_data_path = os.path.join('train_artifacts')
     if not os.path.exists(train_artifacts_data_path):
         os.makedirs(train_artifacts_data_path)
-
-    # Save the imputer to a file
     with open(os.path.join(train_artifacts_data_path, 'median_imputer.pkl'), 'wb') as file:
         pickle.dump(imputer, file)
 
@@ -96,7 +93,7 @@ def wrangling_train_data(path_dataframe_train: str):
                              index=False
                              )
     print(f'>>>>>>>>> df_train_balanced saved on {processed_data_path}.')
-    import pdb; pdb.set_trace()
+
     return df_train_balanced
 
 

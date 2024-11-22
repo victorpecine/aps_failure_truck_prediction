@@ -1,14 +1,13 @@
 {
     "model_parameters": {
-        "n_estimators": [5, 200],
-        "criterion": ["gini"],
-        "max_depth": [3, 13],
-        "min_samples_split": [0.2, 1],
-        "min_samples_leaf": [1, 7]
+        "n_estimators": 15,
+        "max_depth": 4,
+        "min_samples_split": 0.3,
+        "min_samples_leaf": 4
     },
     "cross_validation": {
-        "n_iterations": 10,
-        "folders": 10,
+        "n_iterations": 5,
+        "folders": 5,
         "scores": [
             "recall",
             "f1_macro",

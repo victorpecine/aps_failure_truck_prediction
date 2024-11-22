@@ -19,7 +19,8 @@ def wrangling_test_data(path_dataframe_test: str):
         path_dataframe_test:
 
     Returns:
-        df_test(pandas dataframe): test dataframe processed
+        X_test_filled_nan (pandas dataframe): dataframe with test features only
+        df_test (pandas dataframe): test dataframe processed
     """
 
     df_test = pd.read_csv(path_dataframe_test,
@@ -27,7 +28,7 @@ def wrangling_test_data(path_dataframe_test: str):
                           sep=',',
                           na_values=['na']
                          )
-    
+
     train_features = pd.read_pickle('train_artifacts\\train_features.pkl')
     df_test_features = df_test[train_features].astype(float)
     df_test_target = df_test[['class']]
@@ -51,20 +52,30 @@ def wrangling_test_data(path_dataframe_test: str):
                              encoding='utf-8',
                              index=False
                             )
+    print(f'>>>>>>>>> X_test_filled_nan saved on {processed_data_path}.')
     df_test_target.to_csv(os.path.join(processed_data_path, 'y_test_processed.csv'),
                           sep=',',
                           encoding='utf-8',
                           index=False
                           )
+    print(f'>>>>>>>>> df_test_target saved on {processed_data_path}.')
 
-    return X_test_filled_nan, df_test_target
+    df_test_processed = df_test_target.join(X_test_filled_nan)
+    df_test_processed.to_csv(os.path.join(processed_data_path, 'df_test_processed.csv'),
+                             sep=',',
+                             encoding='utf-8',
+                             index=False
+                            )
+    print(f'>>>>>>>>> df_test_processed saved on {processed_data_path}.')
+
+    return df_test_processed
 
 
-# def main():
-#     args = get_arg_parser()
-#     path_dataframe_test = args.path_dataframe_test
-#     wrangling_test_data(path_dataframe_test)
+def main():
+    args = get_arg_parser()
+    path_dataframe_test = args.path_dataframe_test
+    wrangling_test_data(path_dataframe_test)
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()

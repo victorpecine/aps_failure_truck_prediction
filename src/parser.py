@@ -13,19 +13,32 @@ def get_arg_parser():
     parser.add_argument('--path_dataframe_train',
                         type=str,
                         required=False,
-                        help='Path to the train dataframe',
-                        default='data\\original\\air_system_previous_years.csv'
+                        help='Path to train dataframe'
+                        )
+    parser.add_argument('--path_dataframe_train_processed',
+                        type=str,
+                        required=False,
+                        help='Path to processed train dataframe'
                         )
     parser.add_argument('--path_dataframe_test',
                         type=str,
                         required=False,
-                        help='Path to the test dataframe',
-                        default='data\\original\\air_system_present_year.csv'
+                        help='Path to test dataframe'
+                        )
+    parser.add_argument('--path_dataframe_test_processed',
+                        type=str,
+                        required=False,
+                        help='Path to processed test dataframe'
+                        )
+    parser.add_argument('--path_dataframe_predict_proba',
+                        type=str,
+                        required=False,
+                        help='Path to dataframe with probabilities predicted'
                         )
     parser.add_argument('--path_config_json',
                         type=str,
                         required=False,
-                        help='Path to the config JSON file',
+                        help='Path to config JSON file',
                         default='src/config.json'
                         )
     parser.add_argument('--mlflow_set_tracking_uri',
@@ -36,13 +49,13 @@ def get_arg_parser():
                         )
     parser.add_argument('--mlflow_experiment_name',
                         type=str,
-                        required=True,
+                        required=False,
                         help='MLflow experiment name',
                         default=None
                         )
     parser.add_argument('--mlflow_model_name',
                         type=str,
-                        required=True,
+                        required=False,
                         help='MLflow model name',
                         default=None
                         )

@@ -1,4 +1,5 @@
 import mlflow.tracking
+import  pickle
 import  pandas as pd
 import  mlflow
 import  os
@@ -7,18 +8,18 @@ from    parser          import get_arg_parser
 from    mlflow.tracking import MlflowClient
 
 
-def predict_classification(dataframe_test, parameters, model_name: str, stage: str):
+def predict_classification(dataframe_test, parameters, model_name: str, stage='None'):
     """
-    _summary_
-
-    Args:
-        dataframe_test (_type_): _description_
-        parameters (_type_): _description_
-        model_name (str): _description_
-        stage (str): _description_
-
-    Returns:
-        _type_: _description_
+    Predict classifications using the specified model and parameters.
+    
+    Parameters
+        dataframe_test (dataframe pandas): DataFrame containing the test data for prediction.
+        parameters (dict): Dictionary containing preprocessing objects and any additional parameters needed.
+        model_name (str): Name of the model on mlflow to load. 
+        stage (str): The stage of the prediction process on mlflow
+    
+    Returns
+        df_prob_predict (dataframe pandas): Dataframe with probabilities of non event (0) and event (1)
     """
     print('#' * 80)
     print('PREDICT STARTED\n')
@@ -48,20 +49,18 @@ def predict_classification(dataframe_test, parameters, model_name: str, stage: s
     X_test = dataframe_test[features]
     y_test = dataframe_test[target]
 
-    # Log parameters from used model
+    # Log parameters from model
     client = mlflow.tracking.MlflowClient()
     train_params = client.get_run(train_run_id).data.params
     mlflow.log_params(train_params)
 
-    # Create local directory to download artifacts
-    artifacts_dir = os.path.join('train_artifacts', model_name)
-    os.makedirs(artifacts_dir, exist_ok=True)
-    # Download artifacts from MLflow
-    client.download_artifacts(run_id=train_run_id, path=model_name, dst_path=artifacts_dir)
-    # upload_artifacts_path = os.path.join(artifacts_dir, model_name)
-    mlflow.log_artifacts(artifacts_dir)
-
+    # # Load local model
+    # model_data_path = os.path.join('train_artifacts', 'rf_clf.pkl')
+    # with open(model_data_path, 'rb') as f:
+    #     model = pickle.load(f)
     # Predictions from test and get the event probabilities column
+    # y_prob_predict  = model.predict_proba(X_test)[:, 1]
+
     y_prob_predict  = model.predict(X_test,
                                     {'predict_method': parameters.get('predict_method')}
                                     )[:, 1]
@@ -83,22 +82,29 @@ def predict_classification(dataframe_test, parameters, model_name: str, stage: s
     print('\nPREDICT COMPLETED')
     print('#' * 80)
 
+    df_prob_predict_save_path = os.path.join('data', 'processed', 'df_prob_predict.csv')
+    df_prob_predict.to_csv(df_prob_predict_save_path,
+                           encoding='utf-8',
+                           sep=',',
+                           index=False
+                           )
+
     return df_prob_predict
 
 
-# def main():
-#     args = get_arg_parser()
-#     # Load dataframe
-#     df_test = pd.read_csv(args.path_dataframe_test, encoding='utf-8', sep=',')
-#     # Load parameters
-#     parameters = load_json(args.path_config_json)
+def main():
+    args = get_arg_parser()
+    # Load dataframe
+    df_test = pd.read_csv(args.path_dataframe_test, encoding='utf-8', sep=',')
+    # Load parameters
+    parameters = load_json(args.path_config_json)
 
-#     model_name = 'rand_forest'  # Remove after use
-#     stage      = 'Staging'  # Remove after use
+    model_name = 'rand_forest'  # Remove after use
+    stage      = 'Staging'  # Remove after use
 
-#     # Predict from model
-#     predict(df_test, parameters, model_name, stage)
+    # Predict from model
+    predict_classification(df_test, parameters, model_name, stage)
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()

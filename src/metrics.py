@@ -14,12 +14,12 @@ from    load_params     import load_json
 from    parser          import get_arg_parser
 
 
-def calculate_metrics(dataframe_predict, cutoff=0.5):
+def calculate_metrics(dataframe_predict_proba, cutoff=0.5):
     """
     _summary_
 
     Args:
-        dataframe_predict (_type_): _description_
+        dataframe_predict_proba (_type_): _description_
         cutoff (float, optional): _description_. Defaults to 0.5.
 
     Returns:
@@ -29,9 +29,9 @@ def calculate_metrics(dataframe_predict, cutoff=0.5):
     print('METRICS STARTED\n')
 
     # Define as an event the probabilities >= cutoff
-    dataframe_predict['y_predict'] = np.where(dataframe_predict['y_prob_predict'] >= cutoff, 1, 0)
-    y_test    = dataframe_predict['y_test']
-    y_predict = dataframe_predict['y_predict']
+    dataframe_predict_proba['y_predict'] = np.where(dataframe_predict_proba['y_prob_predict'] >= cutoff, 1, 0)
+    y_test    = dataframe_predict_proba['y_test']
+    y_predict = dataframe_predict_proba['y_predict']
 
     # Calculate metrics
     accuracy       = accuracy_score(y_test, y_predict)
@@ -108,7 +108,7 @@ def calculate_metrics(dataframe_predict, cutoff=0.5):
     print('\nMETRICS COMPLETED')
     print('#' * 80)
 
-    return tn, fp, fn, tp
+    return tp, fn, fp
 
 
 def estimate_maintenance_costs(true_positive: int, false_negative: int, false_positive: int, parameters: dict):
@@ -123,7 +123,7 @@ def estimate_maintenance_costs(true_positive: int, false_negative: int, false_po
     Returns:
         _type_: _description_
     """
-    no_defect_cost = parameters.get('maintenance_cost')['no_defect_cost']
+    no_defect_cost  = parameters.get('maintenance_cost')['no_defect_cost']
     preventive_cost = parameters.get('maintenance_cost')['preventive_cost']
     corrective_cost = parameters.get('maintenance_cost')['corrective_cost']
 
@@ -152,11 +152,15 @@ def estimate_maintenance_costs(true_positive: int, false_negative: int, false_po
 
 
 
-# def main():
-#     args = get_arg_parser()
-#     # Metrics from model
-#     calculate_metrics(df_train, df_test, params)
+def main():
+    args = get_arg_parser()
+    parameters = load_json(args.path_config_json)
+    df_prob_predict = pd.read_csv(args.path_dataframe_test, encoding='utf-8', sep=',')
+
+    # Metrics from model
+    tp, fn, fp = calculate_metrics(df_prob_predict)
+    estimate_maintenance_costs(tp, fn, fp, parameters)
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
