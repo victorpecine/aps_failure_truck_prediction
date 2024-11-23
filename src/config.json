@@ -21,7 +21,7 @@
         "corrective_cost": 500
     },
     "target": "class",
-    "cutoff": 0.3,
+    "cutoff": 0.55,
     "model_name": "rand_forest",
     "predict_method": "predict_proba"
 }
