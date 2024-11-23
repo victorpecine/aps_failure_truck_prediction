@@ -110,15 +110,17 @@ def plot_cross_validation_score(cv_results, score):
 
 def train(dataframe_train: pd.DataFrame, parameters: dict):
     """
-    _summary_
-
-    Args:
-        dataframe_train (pd.DataFrame): _description_
-        parameters (dict): _description_
-
-    Returns:
-        _type_: _description_
+    The `train` function trains a RandomForestClassifier model on the provided training data, saves the
+    model, and logs it using MLflow.
+    
+    :param dataframe_train: The `dataframe_train` parameter is a pandas DataFrame containing the
+    training data for your machine learning model. It should include both the features and the target
+    variable that you want to predict
+    :type dataframe_train: pd.DataFrame
+    :param parameters: {
+    :type parameters: dict
     """
+
     print('#' * 80)
     print('TRAIN STARTED\n')
 
@@ -146,33 +148,6 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
         pickle.dump(model_best_params, f, protocol=5)
     print(f'>>>>>>>>> model_best_params saved on {model_data_path}.')
 
-
-    # # Random search on hyper parameters
-    # param_distributions = create_hyper_parameters_range(parameters)
-    # print('#' * 80)
-    # print('RANDOM SEARCH STARTED\n')
-    # random_search = RandomizedSearchCV(estimator=model,
-    #                                    param_distributions=param_distributions,
-    #                                    verbose=3,
-    #                                    cv=parameters.get('cross_validation')['folders'],
-    #                                    n_iter=parameters.get('cross_validation')['n_iterations'],
-    #                                    random_state=RANDOM_SEED,
-    #                                    scoring='accuracy'
-    #                                    )
-    # random_search.fit(X_train, y_train)
-    # # Define best parameters and creates on a new model
-    # best_params = random_search.best_params_
-    # print(f'\nBest parameters:\n{best_params}')
-
-    # model_best_params = RandomForestClassifier(**best_params, random_state=RANDOM_SEED)
-    # model_best_params.fit(X_train, y_train)
-    # # Save model
-    # with open("rf_clf_tuning.pkl", "wb") as f:
-    #     pickle.dump(model_best_params, f, protocol=5)
-
-    # # Create and log feature importance plots
-    # calculate_feature_importance(model_best_params, importance=0.01)
-
     # Define model signature
     signature = infer_signature(model_input=X_train[:2], params={'predict_method': 'predict_proba'})
     mlflow.pyfunc.log_model(artifact_path=parameters.get('model_name'),
@@ -180,39 +155,6 @@ def train(dataframe_train: pd.DataFrame, parameters: dict):
                             signature=signature
                             )
 
-    # # Log best hyper parameters metadata
-    # for param_name, value in best_params.items():
-    #     mlflow.log_param(param_name, value)
-
-    # print('\nRANDOM SEARCH COMPLETED')
-    # print('#' * 80)
-
-    # # Cross-validation
-    # print('#' * 80)
-    # print('CROSS VALIDATION STARTED\n')
-    # cv_results = cross_validate(estimator=model_best_params,
-    #                             X=X_train,
-    #                             y=y_train,
-    #                             scoring=parameters.get('cross_validation')['scores'],
-    #                             cv=parameters.get('cross_validation')['folders'],
-    #                             verbose=3,
-    #                             return_train_score=True,
-    #                             error_score=np.nan
-    #                             )
-
-    # # Calculate cross-validation scores
-    # for score in parameters.get('cross_validation')['scores']:
-    #     cv_train_mean = cv_results[f'train_{score}'].mean().round(4)
-    #     cv_test_mean  = cv_results[f'test_{score}'].mean().round(4)
-    #     plot_cross_validation_score(cv_results, score)
-    #     print(f'>>>>>>>>> CV {score} train mean: {cv_train_mean}')
-    #     print(f'>>>>>>>>> CV {score} test mean:  {cv_test_mean}')
-    #     # Log cross-validation scores
-    #     mlflow.log_metric(f'cv_{score}_train_mean', cv_train_mean)
-    #     mlflow.log_metric(f'cv_{score}_test_mean',  cv_test_mean)
-
-    # print('\nCROSS VALIDATION COMPLETED')
-    # print('#' * 80)
     print('\nTRAIN COMPLETED')
     print('#' * 80)
 

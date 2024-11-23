@@ -3,10 +3,11 @@ import  argparse
 
 def get_arg_parser():
     """
-    _summary_
+    The `get_arg_parser` function defines an argument parser for command line arguments related to file
+    paths and MLflow settings.
 
-    Returns:
-        _type_: _description_
+    :return: The `get_arg_parser` function returns the parsed arguments from the command line using the
+    `argparse` module in Python.
     """
     # Receive paths from command line
     parser = argparse.ArgumentParser(description='Shared argument parser')

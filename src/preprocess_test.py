@@ -7,20 +7,17 @@ from    parser import get_arg_parser
 
 def wrangling_test_data(path_dataframe_test: str):
     """
-    Change target str to int as 0 (non event) and 1 (event)
-    Use SimpleImputer to fill NaN values with test features medians
-    Use SMOTE to balance test dataframe
-    Drop features with zero variance from test and test
-    Use StandardScaler to scale test and test
+    The function `wrangling_test_data` reads test data, preprocesses it, saves the processed data, and
+    returns the processed dataframe.
     
-    Args:
-        path_dataframe_test:
-        parameters:
-        path_dataframe_test:
+    :param path_dataframe_test: The function `wrangling_test_data` takes a path to a test dataframe as
+    input. The test dataframe is read from the specified path, and certain preprocessing steps are
+    applied to it. The processed data is then saved to CSV files in a specified directory
+    :type path_dataframe_test: str
 
-    Returns:
-        X_test_filled_nan (pandas dataframe): dataframe with test features only
-        df_test (pandas dataframe): test dataframe processed
+    :return: The function `wrangling_test_data` returns the processed test data stored in the DataFrame
+    `df_test_processed`, which includes the target variable 'class' converted to integer dummies and the
+    features with missing values filled using a median imputer.
     """
 
     df_test = pd.read_csv(path_dataframe_test,

@@ -12,18 +12,16 @@ RANDOM_SEED = np.random.seed(31)
 
 def wrangling_train_data(path_dataframe_train: str):
     """
-    Change target str to int as 0 (non event) and 1 (event)
-    Use SimpleImputer to fill NaN values with train features medians
-    Use SMOTE to balance train dataframe
-    Drop features with zero variance from train and test
+    The function `wrangling_train_data` preprocesses and balances the training data, saving the
+    processed dataframe and necessary artifacts.
+    
+    :param path_dataframe_train: The function `wrangling_train_data` takes a file path as input, which
+    should point to a CSV file containing the training data. The function then performs various data
+    preprocessing steps on the training data to prepare it for model training
+    :type path_dataframe_train: str
 
-    Args:
-        path_dataframe_train:
-        parameters:
-        path_dataframe_test:
-
-    Returns:
-        df_train (pandas dataframe): Train dataframe processed
+    :return: The function `wrangling_train_data` returns the processed and balanced training dataframe
+    `df_train_balanced`.
     """
 
     # Load train dataframe

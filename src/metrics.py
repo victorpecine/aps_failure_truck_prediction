@@ -16,16 +16,22 @@ from    parser          import get_arg_parser
 
 def calculate_metrics(dataframe_predict_proba, cutoff=0.5):
     """
-    _summary_
+    The function `calculate_metrics` calculates various classification metrics, generates plots, logs
+    metrics and plots using MLflow, and returns true positive, false negative, and false positive
+    values.
+    
+    :param dataframe_predict_proba: The function `calculate_metrics` takes a dataframe
+    `dataframe_predict_proba` as input, which is expected to contain columns for predicted probabilities
+    (`y_prob_predict`) and true labels (`y_test`). The function calculates various classification
+    metrics such as accuracy, precision, recall, F1-score, specificity.
+    :param cutoff: The `cutoff` parameter in the `calculate_metrics` function is used to define a
+    threshold value for probabilities. Any probability value greater than or equal to the `cutoff` will
+    be considered as an event (1), while values below the `cutoff` will be considered as non-events (
 
-    Args:
-        dataframe_predict_proba (_type_): _description_
-        cutoff (float, optional): _description_. Defaults to 0.5.
-
-    Returns:
-        _type_: _description_
+    :return: The function `calculate_metrics` returns the values of true positive (tp), false negative
+    (fn), and false positive (fp).
     """
-    print('#' * 80)
+
     print('METRICS STARTED\n')
 
     # Define as an event the probabilities >= cutoff
@@ -113,15 +119,27 @@ def calculate_metrics(dataframe_predict_proba, cutoff=0.5):
 
 def estimate_maintenance_costs(true_positive: int, false_negative: int, false_positive: int, parameters: dict):
     """
-    _summary_
-
-    Args:
-        true_positive (int): _description_
-        false_negative (int): _description_
-        false_positive (int): _description_
-
-    Returns:
-        _type_: _description_
+    The function `estimate_maintenance_costs` calculates and logs different types of maintenance costs
+    based on input parameters.
+    
+    :param true_positive: True positives are the number of instances correctly identified as positive by
+    a model or system. In the context of the `estimate_maintenance_costs` function, `true_positive`
+    likely represents the number of cases where maintenance was correctly predicted and performed
+    :type true_positive: int
+    :param false_negative: False negatives are the cases where the model incorrectly predicts the
+    absence of a defect when there is actually a defect present. In the context of the
+    `estimate_maintenance_costs` function, false_negative refers to the number of instances where the
+    model failed to detect a defect that actually exists. This parameter is used
+    :type false_negative: int
+    :param false_positive: False positives are instances where the model incorrectly predicts the
+    absence of a defect when there actually is one. In the context of the `estimate_maintenance_costs`
+    function, false positives are used to calculate the cost of no defect maintenance
+    :type false_positive: int
+    :param parameters: It seems like the `parameters` dictionary is expected to have a key called
+    `'maintenance_cost'` which contains subkeys `'no_defect_cost'`, `'preventive_cost'`, and
+    `'corrective_cost'`. These subkeys are used to retrieve the respective costs for calculating
+    maintenance costs in the
+    :type parameters: dict
     """
     no_defect_cost  = parameters.get('maintenance_cost')['no_defect_cost']
     preventive_cost = parameters.get('maintenance_cost')['preventive_cost']
@@ -147,9 +165,6 @@ def estimate_maintenance_costs(true_positive: int, false_negative: int, false_po
     mlflow.log_metric('cost_preventive_maintenance', preventive_maintenance_cost)
     mlflow.log_metric('cost_corrective_maintenance', corrective_maintenance_cost)
     mlflow.log_metric('cost_total_maintenance',      total_maintenance_cost)
-
-    return None
-
 
 
 def main():

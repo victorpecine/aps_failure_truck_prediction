@@ -4,6 +4,22 @@ import  shutil
 
 
 def create_experiment(tracking_uri, experiment_name):
+    """
+    The function `create_experiment` sets up an experiment in MLflow with the specified tracking URI and
+    name, handling exceptions and managing a `.trash` folder if needed.
+    
+    :param tracking_uri: The `tracking_uri` parameter in the `create_experiment` function is used to
+    specify the URI where MLflow will store the experiment tracking data. This URI can point to a local
+    directory, a remote server, or a cloud storage location where MLflow will log the experiment
+    metrics, parameters, and artifacts
+    :param experiment_name: The `experiment_name` parameter is a string that represents the name of the
+    experiment you want to create or access in MLFlow. It is used to uniquely identify and organize
+    different runs and results within MLFlow
+    
+    :return: The function `create_experiment` returns the experiment ID of the newly created experiment
+    in MLFlow.
+    """
+
     # Try to access the experiment at MLFLow
     try:
         mlflow.set_tracking_uri(tracking_uri)

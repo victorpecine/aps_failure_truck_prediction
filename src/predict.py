@@ -10,17 +10,28 @@ from    mlflow.tracking import MlflowClient
 
 def predict_classification(dataframe_test, parameters, model_name: str, stage='None'):
     """
-    Predict classifications using the specified model and parameters.
+    The function `predict_classification` loads a model, makes predictions on a test dataset, logs
+    parameters and metadata, and saves the predictions to a CSV file.
     
-    Parameters
-        dataframe_test (dataframe pandas): DataFrame containing the test data for prediction.
-        parameters (dict): Dictionary containing preprocessing objects and any additional parameters needed.
-        model_name (str): Name of the model on mlflow to load. 
-        stage (str): The stage of the prediction process on mlflow
-    
-    Returns
-        df_prob_predict (dataframe pandas): Dataframe with probabilities of non event (0) and event (1)
+    :param dataframe_test: The `dataframe_test` parameter is a pandas DataFrame containing the test data
+    for which you want to make predictions. It should include the features used for prediction as
+    columns, as well as the target variable that you want to predict
+    :param parameters: The `parameters` dictionary contains the following key-value pairs:
+    :param model_name: The `model_name` parameter in the `predict_classification` function is used to
+    specify the name of the model that you want to load and use for making predictions. This model
+    should have been previously trained and saved using MLflow. The function will load the specified
+    model based on the provided `model_name
+    :type model_name: str
+    :param stage: The `stage` parameter in the `predict_classification` function is used to specify the
+    stage of the model to be loaded from MLflow. It is an optional parameter with a default value of
+    `'None'`. This parameter allows you to specify a particular stage (e.g., 'Staging', ', defaults to
+    None (optional)
+
+    :return: The function `predict_classification` returns a pandas DataFrame `df_prob_predict`
+    containing the predicted probabilities and actual target values for the test data, along with the
+    features used for prediction.
     """
+
     print('#' * 80)
     print('PREDICT STARTED\n')
 
@@ -53,13 +64,6 @@ def predict_classification(dataframe_test, parameters, model_name: str, stage='N
     client = mlflow.tracking.MlflowClient()
     train_params = client.get_run(train_run_id).data.params
     mlflow.log_params(train_params)
-
-    # # Load local model
-    # model_data_path = os.path.join('train_artifacts', 'rf_clf.pkl')
-    # with open(model_data_path, 'rb') as f:
-    #     model = pickle.load(f)
-    # Predictions from test and get the event probabilities column
-    # y_prob_predict  = model.predict_proba(X_test)[:, 1]
 
     y_prob_predict  = model.predict(X_test,
                                     {'predict_method': parameters.get('predict_method')}
